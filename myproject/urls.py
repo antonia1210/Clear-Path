@@ -21,8 +21,15 @@ from django.http import HttpResponse
 def home(request):
     return HttpResponse("You are logged in!")
 
+def user_view(request):
+    return HttpResponse("This is the page for users. You are logged in")
+
+def accountant_view(request):
+    return HttpResponse("This is the page for the accountant. You are logged in")
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('accounts.urls')),
     path("home/", home, name="home"),
+    path("user/", user_view, name="user"),
+    path("account/", accountant_view, name="accountant"),
 ]

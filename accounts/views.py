@@ -10,8 +10,12 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('home')
-            #messages.success(request, 'You are logged in')
+            if user.role == 'USER':
+                return redirect('user')
+            elif user.role == 'ACCOUNTANT':
+                return redirect('accountant')
+            elif user.role == 'ADMIN':
+                return redirect('home')
         else:
             messages.error(request, 'Invalid username or password.')
     return render(request, 'accounts/login.html')
