@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Listă</title>
+</head>
+<body>
+    <h2>{{ church.name }}</h2>
+
+    <p>
+        <a href="{% url 'items:create' %}">Adăugare item nou</a>
+    </p>
+
+    <table border="1">
+        <tr>
+            <th>Data</th>
+            <th>Document</th>
+            <th>Denumire</th>
+            <th>Adresa</th>
+            <th>Explicații</th>
+            <th>Felul</th>
+            <th>Tipul plății</th>
+            <th>Modul plății</th>
+            <th>Valoare</th>
+            <th>Actiuni</th>
+            <th>SOLD dupa tranzacție</th>
+        </tr>
+
+        {% for item in item_list %}
+        <tr>
+            <td>{{ item.data }}</td>
+            <td>{{ item.document }}</td>
+            <td>{{ item.denumire }}</td>
+            <td>{{ item.adresa }}</td>
+            <td>{{ item.explicatii }}</td>
+            <td>{{ item.felul }}</td>
+            <td>{{ item.tip }}</td>
+            <td>{{ item.tip_incasare }}</td>
+            <td>{{ item.pret }}</td>
+            <td>
+                <a href="{% url 'items:update' item.pk %}">Editare</a> |
+                <a href="{% url 'items:delete' item.pk %}">Ștergere</a>
+            </td>
+            <td>{{ item.current_balance }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="7">Nu există încă informații</td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

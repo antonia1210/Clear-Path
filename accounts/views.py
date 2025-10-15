@@ -11,7 +11,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
             if user.role == 'USER':
-                return redirect('user')
+                return redirect('/items/')
             elif user.role == 'ACCOUNTANT':
                 return redirect('accountant')
             elif user.role == 'ADMIN':
