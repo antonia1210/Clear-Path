@@ -1,10 +1,12 @@
 from urllib import request
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.http import HttpResponse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import Item
 from django.shortcuts import render
 from django.views import View
+import csv
 
 class ItemListView(LoginRequiredMixin, View):
     def get(self,request):
@@ -25,7 +27,7 @@ class ItemListView(LoginRequiredMixin, View):
 
 class ItemCreateView(LoginRequiredMixin, CreateView):
     model = Item
-    fields = "__all__"
+    fields = ['data', 'document', 'denumire', 'adresa', 'explicatii', 'felul', 'tip', 'tip_incasare', 'pret']
     template_name = "items/item_form.html"
     success_url = reverse_lazy("items:list")
 
@@ -35,7 +37,7 @@ class ItemCreateView(LoginRequiredMixin, CreateView):
 
 class ItemUpdateView(LoginRequiredMixin, UpdateView):
     model = Item
-    fields = "__all__"
+    fields = ['data', 'document', 'denumire', 'adresa', 'explicatii', 'felul', 'tip', 'tip_incasare', 'pret']
     template_name = "items/item_form.html"
     success_url = reverse_lazy("items:list")
     def get_queryset(self):
@@ -47,3 +49,35 @@ class ItemDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("items:list")
     def get_queryset(self):
         return Item.objects.all(church=self.request.user.assigned_church)
+
+def export_to_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="Executie.csv"'
+    writer = csv.writer(response)
+    writer.writerow([
+        'Data',
+        'Document',
+        'Denumire',
+        'Adresa',
+        'Explicatii',
+        'Felul',
+        'Tipul platii',
+        'Modul platii',
+        'Valoare'
+    ])
+    user = request.user
+    items=Item.objects.filter(church=user.assigned_church)
+    for item in items:
+        writer.writerow([
+            item.data,
+            item.document,
+            item.denumire,
+            item.adresa,
+            item.explicatii,
+            item.felul,
+            item.tip,
+            item.tip_incasare,
+            item.pret
+        ])
+
+    return response

@@ -6,7 +6,9 @@
 </head>
 <body>
     <h2>{{ church.name }}</h2>
-
+    <p>
+    <a href="{% url 'items:export' %}">Exportă Execuția Bugetară</a>
+    </p>
     <p>
         <a href="{% url 'items:create' %}">Adăugare item nou</a>
     </p>
