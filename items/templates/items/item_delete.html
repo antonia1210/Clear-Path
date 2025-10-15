@@ -8,7 +8,7 @@
 <h2>Ștergere item</h2>
 <form method="post">
         {% csrf_token %}
-        <p>Sunteți sigur că doriți să ștergeți itemul?</p>
+        <p>Sunteți sigur că doriți să ștergeți acest item?</p>
         <button type="submit">Șterge</button>
         <a href="{% url 'items:list' %}">Anulare</a>
     </form>
