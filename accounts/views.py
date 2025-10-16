@@ -12,8 +12,8 @@ def login_view(request):
             login(request, user)
             if user.role == 'USER':
                 return redirect('/items/')
-            elif user.role == 'ACCOUNTANT':
-                return redirect('accountant')
+            elif user.role == 'CONTABIL':
+                return redirect('/churches/')
             elif user.role == 'ADMIN':
                 return redirect('home')
         else:

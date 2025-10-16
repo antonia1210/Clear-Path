@@ -4,9 +4,10 @@ from django.http import HttpResponse
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy
 from .models import Item
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.views import View
 import csv
+from churches.models import Church
 
 class ItemListView(LoginRequiredMixin, View):
     def get(self,request):
@@ -52,7 +53,7 @@ class ItemDeleteView(LoginRequiredMixin, DeleteView):
 
 def export_to_csv(request):
     response = HttpResponse(content_type='text/csv')
-    response['Content-Disposition'] = 'attachment; filename="Executie.csv"'
+    response['Content-Disposition'] = 'attachment; filename="Executie bugetara.csv"'
     writer = csv.writer(response)
     writer.writerow([
         'Data',
@@ -63,11 +64,22 @@ def export_to_csv(request):
         'Felul',
         'Tipul platii',
         'Modul platii',
-        'Valoare'
+        'Valoare',
+        'Sold'
     ])
     user = request.user
     items=Item.objects.filter(church=user.assigned_church)
+    running_balance = 0
+    items_list = []
     for item in items:
+        if item.tip == 'Încasare':
+            running_balance += item.pret
+        elif item.tip == 'Plată':
+            running_balance -= item.pret
+        item.current_balance = running_balance
+        items_list.append(item)
+
+    for item in items_list:
         writer.writerow([
             item.data,
             item.document,
@@ -77,7 +89,52 @@ def export_to_csv(request):
             item.felul,
             item.tip,
             item.tip_incasare,
-            item.pret
+            item.pret,
+            item.current_balance
+        ])
+
+    return response
+
+def accountant_export_to_csv(request, church_id):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="Executie bugetara.csv"'
+    writer = csv.writer(response)
+    writer.writerow([
+        'Data',
+        'Document',
+        'Denumire',
+        'Adresa',
+        'Explicatii',
+        'Felul',
+        'Tipul platii',
+        'Modul platii',
+        'Valoare',
+        'Sold'
+    ])
+    church = get_object_or_404(Church, id=church_id)
+    items = Item.objects.filter(church=church)
+    running_balance = 0
+    items_list = []
+    for item in items:
+        if item.tip == 'Încasare':
+            running_balance += item.pret
+        elif item.tip == 'Plată':
+            running_balance -= item.pret
+        item.current_balance = running_balance
+        items_list.append(item)
+
+    for item in items_list:
+        writer.writerow([
+            item.data,
+            item.document,
+            item.denumire,
+            item.adresa,
+            item.explicatii,
+            item.felul,
+            item.tip,
+            item.tip_incasare,
+            item.pret,
+            item.current_balance
         ])
 
     return response

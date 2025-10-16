@@ -15,5 +15,6 @@ urlpatterns = [
     path('', include('accounts.urls')),
     path("home/", home, name="home"),
     path("items/", include('items.urls')),
+    path("churches/", include('churches.urls')),
 
 ]

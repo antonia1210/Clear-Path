@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Lista Parohii</title>
+</head>
+<body>
+    <h1>Lista tuturor parohiilor</h1>
+    <ul>
+        {% for church in churches %}
+            <li>
+                {{ church.name }}
+                <a href="{%  url 'churches:items' church.id %}">Vezi executia</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

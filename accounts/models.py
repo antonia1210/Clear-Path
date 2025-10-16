@@ -10,7 +10,7 @@ class User(AbstractUser):
         ('ADMIN', 'Admin'),
         ('ARHIEPISCOP', 'Arhiepiscop'),
     ]
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='ADMIN')
+    role = models.CharField(max_length=20, choices=ROLE_CHOICES, default='USER')
     full_name = models.CharField(max_length=255)
     assigned_church = models.ForeignKey('churches.Church', on_delete=models.SET_NULL, null=True, blank=True)
 
