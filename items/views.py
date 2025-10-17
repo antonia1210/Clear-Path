@@ -68,7 +68,10 @@ def export_to_csv(request):
         'Sold'
     ])
     user = request.user
+    year = request.GET.get('year')
     items=Item.objects.filter(church=user.assigned_church)
+    year = int(year) if year else None
+    items=items.filter(data__year=year)
     running_balance = 0
     items_list = []
     for item in items:
@@ -113,6 +116,9 @@ def accountant_export_to_csv(request, church_id):
     ])
     church = get_object_or_404(Church, id=church_id)
     items = Item.objects.filter(church=church)
+    year = request.GET.get('year')
+    year = int(year) if year else None
+    items=items.filter(data__year=year)
     running_balance = 0
     items_list = []
     for item in items:
