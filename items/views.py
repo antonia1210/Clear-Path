@@ -8,11 +8,15 @@ from django.shortcuts import render, get_object_or_404
 from django.views import View
 import csv
 from churches.models import Church
+from django.db import models
 
 class ItemListView(LoginRequiredMixin, View):
     def get(self,request):
         user = self.request.user
         it = Item.objects.filter(church=user.assigned_church)
+        cautare = request.GET.get('cautare', '')
+        if cautare:
+            it=it.filter(models.Q(explicatii__icontains=cautare))
         running_balance = 0
         items = []
         for item in it:

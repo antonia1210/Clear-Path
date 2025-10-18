@@ -16,6 +16,11 @@
         <a href="{% url 'items:create' %}">Adăugare item nou</a>
     </p>
 
+     <form method="get" action="{% url 'items:list' %}">
+         <input type="text" name="cautare" placeholder="Căutare" value="{{ request.GET.cautare }}">
+         <button type="submit">Caută</button>
+     </form>
+
     <table border="1">
         <tr>
             <th>Data</th>

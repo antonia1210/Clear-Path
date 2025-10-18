@@ -9,7 +9,9 @@
 
 {% if request.user.is_authenticated %}
     <p>Sunteti autentificat {{ request.user.username}}!</p>
-    <a href="{% url 'items:list' %}"><button type="button">Lista</button></a>
+    {% if request.user.role != 'CONTABIL' %}
+        <a href="{% url 'items:list' %}"><button type="button">Lista</button></a>
+    {% endif %}
     <a href="{% url 'logout' %}"><button type="button">Logout</button></a>
     {%  else %}
         <a href="{% url 'login' %}"><button type="button">Login</button></a>
