@@ -23,6 +23,7 @@ class Item(models.Model):
         ('Numerar', 'Numerar'),
         ('Card', 'Card'),
     ]
+    numar_curent = models.IntegerField(default=1)
     data = models.DateField(default=date.today())
     document = models.IntegerField(default=1)
     denumire = models.CharField(max_length=200, blank = True)

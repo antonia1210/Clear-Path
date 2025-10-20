@@ -16,15 +16,21 @@ class ItemListView(LoginRequiredMixin, View):
         it = Item.objects.filter(church=user.assigned_church)
         cautare = request.GET.get('cautare', '')
         if cautare:
-            it=it.filter(models.Q(explicatii__icontains=cautare))
+            it=it.filter(models.Q(explicatii__icontains=cautare,
+                                  felul__icontains=cautare,
+                                  tip__icontains=cautare,
+                                  tip_incasare__icontains=cautare,))
         running_balance = 0
+        place=0
         items = []
         for item in it:
+            place+=1
             if item.tip == 'Încasare':
                 running_balance += item.pret
             elif item.tip == 'Plată':
                 running_balance -= item.pret
             item.current_balance = running_balance
+            item.numar_curent=place
             items.append(item)
 
         ctx = {'church': user.assigned_church, 'item_list': items}
@@ -60,6 +66,7 @@ def export_to_csv(request):
     response['Content-Disposition'] = 'attachment; filename="Executie bugetara.csv"'
     writer = csv.writer(response)
     writer.writerow([
+        'Nr.curent',
         'Data',
         'Document',
         'Denumire',
@@ -77,17 +84,21 @@ def export_to_csv(request):
     year = int(year) if year else None
     items=items.filter(data__year=year)
     running_balance = 0
+    place=0
     items_list = []
     for item in items:
+        place += 1
         if item.tip == 'Încasare':
             running_balance += item.pret
         elif item.tip == 'Plată':
             running_balance -= item.pret
         item.current_balance = running_balance
+        item.numar_curent = place
         items_list.append(item)
 
     for item in items_list:
         writer.writerow([
+            item.numar_curent,
             item.data,
             item.document,
             item.denumire,
@@ -124,13 +135,16 @@ def accountant_export_to_csv(request, church_id):
     year = int(year) if year else None
     items=items.filter(data__year=year)
     running_balance = 0
+    place=0
     items_list = []
     for item in items:
+        place += 1
         if item.tip == 'Încasare':
             running_balance += item.pret
         elif item.tip == 'Plată':
             running_balance -= item.pret
         item.current_balance = running_balance
+        item.numar_curent = place
         items_list.append(item)
 
     for item in items_list:

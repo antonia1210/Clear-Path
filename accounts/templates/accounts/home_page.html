@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ro">
 <head>
     <meta charset="UTF-8">
     <title>Acasă</title>
@@ -14,7 +14,8 @@
     {% endif %}
     <a href="{% url 'logout' %}"><button type="button">Logout</button></a>
     {%  else %}
-        <a href="{% url 'login' %}"><button type="button">Login</button></a>
+        <a href="{% url 'login' %}"><button type="button">Autentificare</button></a>
+        <a href="{% url 'signup' %}"><button type="button">Înregistrare</button></a>
 {%  endif %}
 
 </body>
