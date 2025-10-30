@@ -1,6 +1,6 @@
 from django.urls import path
 from . import views
-from .views import export_to_csv, accountant_export_to_csv
+from .views import export_to_csv, accountant_export_to_csv, export_partizi_csv
 
 app_name = 'items'
 
@@ -11,4 +11,5 @@ urlpatterns = [
     path('delete/<int:pk>/', views.ItemDeleteView.as_view(), name='delete'),
     path('export', export_to_csv, name='export'),
     path('acc_export/<int:church_id>', accountant_export_to_csv, name='acc_export'),
+    path('partizi', export_partizi_csv, name='partizi'),
 ]

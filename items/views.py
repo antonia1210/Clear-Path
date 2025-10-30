@@ -16,10 +16,7 @@ class ItemListView(LoginRequiredMixin, View):
         it = Item.objects.filter(church=user.assigned_church)
         cautare = request.GET.get('cautare', '')
         if cautare:
-            it=it.filter(models.Q(explicatii__icontains=cautare,
-                                  felul__icontains=cautare,
-                                  tip__icontains=cautare,
-                                  tip_incasare__icontains=cautare,))
+            it=it.filter(models.Q(explicatii__icontains=cautare))
         running_balance = 0
         place=0
         items = []
@@ -52,14 +49,14 @@ class ItemUpdateView(LoginRequiredMixin, UpdateView):
     template_name = "items/item_form.html"
     success_url = reverse_lazy("items:list")
     def get_queryset(self):
-        return Item.objects.all(church=self.request.user.assigned_church)
+        return Item.objects.filter(church=self.request.user.assigned_church)
 
 class ItemDeleteView(LoginRequiredMixin, DeleteView):
     model = Item
     template_name = "items/item_delete.html"
     success_url = reverse_lazy("items:list")
     def get_queryset(self):
-        return Item.objects.all(church=self.request.user.assigned_church)
+        return Item.objects.filter(church=self.request.user.assigned_church)
 
 def export_to_csv(request):
     response = HttpResponse(content_type='text/csv')
@@ -160,5 +157,69 @@ def accountant_export_to_csv(request, church_id):
             item.pret,
             item.current_balance
         ])
+
+    return response
+
+def export_partizi_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="Partizi.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['Partizi venituri'])
+    writer.writerow([
+        'Nr.curent',
+        'Felul operatiunii',
+        'Suma'
+    ])
+    dict = {}
+    user = request.user
+    year = request.GET.get('year')
+    items = Item.objects.filter(church=user.assigned_church)
+    year = int(year) if year else None
+    items = items.filter(data__year=year)
+    total = 0
+    for item in items:
+        if item.tip == 'Încasare':
+            if item.felul not in dict:
+                dict[item.felul] = item.pret
+                total+=item.pret
+            else:
+                dict[item.felul] = dict[item.felul] + item.pret
+                total+=item.pret
+    cnt=0
+    for key, value in dict.items():
+        cnt+=1
+        writer.writerow([
+            cnt,
+            key,
+            value
+        ])
+    writer.writerow([
+        'TOTAL',
+        total,
+    ])
+    writer.writerow([])
+    writer.writerow(['Partizi cheltuieli'])
+    dict = {}
+    total = 0
+    for item in items:
+        if item.tip == 'Plată':
+            if item.felul not in dict:
+                dict[item.felul] = item.pret
+                total += item.pret
+            else:
+                dict[item.felul] = dict[item.felul] + item.pret
+                total += item.pret
+    cnt = 0
+    for key, value in dict.items():
+        cnt += 1
+        writer.writerow([
+            cnt,
+            key,
+            value
+        ])
+    writer.writerow([
+        'TOTAL',
+        total,
+    ])
 
     return response
